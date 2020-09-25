@@ -104,9 +104,11 @@
               description: person.description
             }
           )
-          // .then(response => this.persons.unshift(response.data))
           .then(response => this.persons.unshift(person))
-          .catch(respones => console.log(response));
+          .catch(function(error){ 
+            alert('Personsデータの登録に失敗しましたっ！\n(・Д・)ﾅﾝﾃｺｯﾀｲ!!' )
+            console.log(error);
+          });
         
           // this.persons.push(person);
           this.$modal.hide('person-modal');
