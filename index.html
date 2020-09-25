@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Persons</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+
+<body>
+  <div id="app">
+    <div class="container mt-5">
+      <div class="row">
+        <div class="col-md-12">
+          <h1>{{ title }}</h1>
+          <h1>{{ psersons }}</h1>
+          <button class="btn btn-primary my-2" @click="showModal">Add</button>
+          <table class="table">
+            <thead class="thead-dark">
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>更新</th>
+                <th>削除</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="person in persons">
+                <td>{{ person.id }}</td>
+                <td>{{ person.name }}</td>
+                <td>{{ person.description }}</td>
+                <td><button class="btn btn-primary" @click="editPerson(person)">Update</button></td>
+                <td><button class="btn btn-danger" @click="deletePerson(person)">Delete</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- モーダルウィンドウ用 -->
+    <modal name="person-modal" :height="400">
+      <div class="card">
+        <div class="card-body">
+          <div class="card-title">
+            <h2 v-if="createFlag">Add Person</h2>
+            <h2 v-else>Update Person</h2>
+          </div>
+          <div class="card-text">
+            <div class="form-group">
+              <label for="id">ID</label>
+              <input type="text" class="form-control" id="id" placeholder="IDを入力してください" v-model="form.id">
+            </div>
+            <div class="form-group">
+              <label for="name">NAME</label>
+              <input type="text" class="form-control" id="name" placeholder="NAMEを入力してください" v-model="form.name">
+            </div>
+            <div class="form-group">
+              <label for="description">Description</label>
+              <input type="text" class="form-control" id="description" placeholder="詳細説明を入力してください" v-model="form.description">
+            </div>
+            <button class="btn btn-primary" @click="registerPerson" v-if="createFlag">登録</button>
+            <button class="btn btn-primary" @click="updatePerson" v-else>更新</button>
+            <button class="btn btn-secondary" @click="cancel">キャンセル</button>
+          </div>
+        </div>
+      </div>
+    </modal>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue-js-modal@1.3.31/dist/index.min.js"></script>
+  <script>
+    Vue.use(window["vue-js-modal"].default);
+
+    const vue = new Vue({
+      el: "#app",
+      data: {
+        title: 'Persons',
+        form: {
+          id:'',
+          name:'',
+          description:''
+        },
+        persons: '',
+        editIndex: -1,
+        createFlag: true
+      },
+      methods: {
+        showModal(){
+          this.createFlag = true;
+          this.resetForm();
+          this.$modal.show('person-modal');
+        },
+        registerPerson(){
+          const person = Object.assign({},this.form);
+          this.persons.push(person);
+          this.$modal.hide('person-modal');
+          this.resetForm();
+        },
+        resetForm(){
+          this.form.id ='';
+          this.form.name ='';
+          this.form.description ='';
+        },
+        deletePerson(person){
+          const index = this.persons.indexOf(person);
+          this.persons.splice(index, 1);
+        },
+        editPerson(person){
+          this.createFlag = false,
+          this.editIndex = this.persons.indexOf(person);
+          this.form = Object.assign({}, person);
+          this.$modal.show('person-modal');
+        },
+        updatePerson(){
+          Object.assign(this.persons[this.editIndex], this.form);
+          this.$modal.hide('person-modal');
+        },
+        cancel(){
+          this.$modal.hide('person-modal');
+        }
+      },
+      mounted(){
+        axios
+          .get('https://gp36vxm6h1.execute-api.ap-northeast-1.amazonaws.com/dev')
+          .then(response => (this.persons = JSON.parse(response.data.body)))
+          .catch(function(error){ 
+            alert('Personsデータの取得に失敗しましたっ！\n(・Д・)ﾅﾝﾀﾞｯﾃｪ!!' )
+            console.log(error);
+          });
+        console.log(this.persons);
+      }
+    });
+  </script>
+</body>
+
+</html>
