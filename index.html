@@ -95,9 +95,23 @@
         },
         registerPerson(){
           const person = Object.assign({},this.form);
-          this.persons.push(person);
+          
+          axios
+          .post('https://gp36vxm6h1.execute-api.ap-northeast-1.amazonaws.com/dev', 
+            {
+              id: person.id,
+              name: person.name,
+              description: person.description
+            }
+          )
+          // .then(response => this.persons.unshift(response.data))
+          .then(response => this.persons.unshift(person))
+          .catch(respones => console.log(response));
+        
+          // this.persons.push(person);
           this.$modal.hide('person-modal');
           this.resetForm();
+
         },
         resetForm(){
           this.form.id ='';
@@ -120,6 +134,16 @@
         },
         cancel(){
           this.$modal.hide('person-modal');
+        },
+        getPersons(){
+          axios
+          .get('https://gp36vxm6h1.execute-api.ap-northeast-1.amazonaws.com/dev')
+          .then(response => (this.persons = JSON.parse(response.data.body)))
+          .catch(function(error){ 
+            alert('Personsデータの取得に失敗しましたっ！\n(・Д・)ﾅﾝﾀﾞｯﾃｪ!!' )
+            console.log(error);
+          });
+          console.log(this.persons);          
         }
       },
       mounted(){
