@@ -15,6 +15,7 @@
         <div class="col-md-12">
           <h1>{{ title }}</h1>
           <h1>{{ psersons }}</h1>
+          <p>Please add persons whom you like or respect, and describe them in detail.</p>
           <button class="btn btn-primary my-2" @click="showModal">Add</button>
           <table class="table">
             <thead class="thead-dark">
@@ -22,8 +23,8 @@
                 <th>ID</th>
                 <th>Name</th>
                 <th>Description</th>
-                <th>更新</th>
-                <th>削除</th>
+                <th>Update</th>
+                <th>Delete</th>
               </tr>
             </thead>
             <tbody>
@@ -97,7 +98,7 @@
           const person = Object.assign({},this.form);
           
           axios
-          .post('https://gp36vxm6h1.execute-api.ap-northeast-1.amazonaws.com/dev', 
+          .post('[作成したAPI GatewayのURL]', 
             {
               id: person.id,
               name: person.name,
@@ -106,7 +107,7 @@
           )
           .then(response => this.persons.unshift(person))
           .catch(function(error){ 
-            alert('Personsデータの登録に失敗しましたっ！\n(・Д・)ﾅﾝﾃｺｯﾀｲ!!' )
+            alert('Personsデータの登録に失敗しましたっ！\n(・Д・)ﾅﾝﾃｺｯﾀｲ!!' );
             console.log(error);
           });
         
@@ -121,42 +122,57 @@
           this.form.description ='';
         },
         deletePerson(person){
-          const index = this.persons.indexOf(person);
-          this.persons.splice(index, 1);
+          const params = { id: person.id };
+          axios.request({
+            method: 'delete',
+            url: '[作成したAPI GatewayのURL]',
+            data: { id: person.id }
+          })
+          .then(response => { 
+            const index = this.persons.indexOf(person);
+            this.persons.splice(index, 1);
+            console.log('deleted successfully');
+          })
+          .catch(function(error){ 
+            alert('Personsデータの削除に失敗しましたっ！\n(・Д・)ﾃﾔﾝﾃﾞｲ!!' );
+            console.log(error);
+          });
         },
         editPerson(person){
           this.createFlag = false,
           this.editIndex = this.persons.indexOf(person);
           this.form = Object.assign({}, person);
+          axios.put()
           this.$modal.show('person-modal');
         },
         updatePerson(){
-          Object.assign(this.persons[this.editIndex], this.form);
+          axios
+          .put('[作成したAPI GatewayのURL]', 
+            {
+              id: this.form.id,
+              name: this.form.name,
+              description: this.form.description
+            }
+          )
+          .then(response => Object.assign(this.persons[this.editIndex], this.form))
+          .catch(function(error){ 
+            alert('Personsデータの更新に失敗しましたっ！\n(・Д・)ﾅﾝﾃｺｯﾀｲ!!' );
+            console.log(error);
+          });
           this.$modal.hide('person-modal');
         },
         cancel(){
           this.$modal.hide('person-modal');
-        },
-        getPersons(){
-          axios
-          .get('https://gp36vxm6h1.execute-api.ap-northeast-1.amazonaws.com/dev')
-          .then(response => (this.persons = JSON.parse(response.data.body)))
-          .catch(function(error){ 
-            alert('Personsデータの取得に失敗しましたっ！\n(・Д・)ﾅﾝﾀﾞｯﾃｪ!!' )
-            console.log(error);
-          });
-          console.log(this.persons);          
         }
       },
       mounted(){
         axios
-          .get('https://gp36vxm6h1.execute-api.ap-northeast-1.amazonaws.com/dev')
+          .get('[作成したAPI GatewayのURL]')
           .then(response => (this.persons = JSON.parse(response.data.body)))
           .catch(function(error){ 
-            alert('Personsデータの取得に失敗しましたっ！\n(・Д・)ﾅﾝﾀﾞｯﾃｪ!!' )
+            alert('Personsデータの取得に失敗しましたっ！\n(・Д・)ﾅﾝﾀﾞｯﾃｪ!!' );
             console.log(error);
           });
-        console.log(this.persons);
       }
     });
   </script>
