@@ -16,15 +16,12 @@
           <h1>{{ title }}</h1>
           <h1>{{ psersons }}</h1>
           <p>Please add persons whom you like or respect, and describe them in detail.</p>
-          <button class="btn btn-primary my-2" @click="showModal">Add</button>
           <table class="table">
             <thead class="thead-dark">
               <tr>
                 <th>ID</th>
                 <th>Name</th>
                 <th>Description</th>
-                <!-- <th>Update</th> -->
-                <!-- <th>Delete</th> -->
               </tr>
             </thead>
             <tbody>
@@ -32,8 +29,6 @@
                 <td>{{ person.id }}</td>
                 <td>{{ person.name }}</td>
                 <td>{{ person.description }}</td>
-                <!-- <td><button class="btn btn-primary" @click="editPerson(person)">Update</button></td> -->
-                <!-- <td><button class="btn btn-danger" @click="deletePerson(person)">Delete</button></td> -->
               </tr>
             </tbody>
           </table>
@@ -43,10 +38,7 @@
   </div>
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <!-- <script src="https://cdn.jsdelivr.net/npm/vue-js-modal@1.3.31/dist/index.min.js"></script> -->
   <script>
-    Vue.use(window["vue-js-modal"].default);
-
     const vue = new Vue({
       el: "#app",
       data: {
